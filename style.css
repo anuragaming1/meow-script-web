@@ -457,7 +457,7 @@ body {
 .script-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink);
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
     border-radius: 12px;
     display: flex;
     align-items: center;
