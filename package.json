@@ -1,0 +1,16 @@
+{
+  "name": "meow-script-web",
+  "version": "1.0.0",
+  "description": "Web chia sẻ script Roblox với giao diện neon",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": ["roblox", "script", "neon", "web"],
+  "author": "Anura Gaming",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
