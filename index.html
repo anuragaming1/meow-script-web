@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐱 Meow Script Web - Tất cả Script Roblox</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+    <!-- Thanh điều hướng bên trái -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cat"></i>
+            <span>MEOW SCRIPT</span>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li class="menu-item active" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </li>
+            <li class="menu-item" data-page="member-scripts">
+                <i class="fas fa-share-alt"></i>
+                <span>Member Share</span>
+            </li>
+            <li class="menu-item" data-page="chat">
+                <i class="fas fa-comments"></i>
+                <span>Chat Help</span>
+            </li>
+            <li class="menu-item" data-page="info">
+                <i class="fas fa-info-circle"></i>
+                <span>Info</span>
+            </li>
+        </ul>
+        
+        <div class="user-profile">
+            <div class="user-avatar" id="userAvatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+                <span id="userName">Khách</span>
+                <span class="user-status" id="userStatus">Chưa đăng nhập</span>
+            </div>
+            <button class="login-btn" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                Đăng nhập
+            </button>
+        </div>
+    </nav>
+
+    <!-- Nội dung chính -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-left">
+                <h1 id="pageTitle">Home - Script List</h1>
+            </div>
+            <div class="header-right">
+                <div class="admin-controls" id="adminControls" style="display: none;">
+                    <button class="admin-btn" id="addScriptBtn">
+                        <i class="fas fa-plus"></i> Thêm Script
+                    </button>
+                </div>
+                <div class="auth-buttons">
+                    <button class="auth-btn google-btn" id="googleLogin">
+                        <i class="fab fa-google"></i> Google
+                    </button>
+                    <button class="auth-btn fb-btn" id="facebookLogin">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Container cho các trang -->
+        <div class="content-container">
+            <!-- Trang Home (mặc định) -->
+            <div id="homePage" class="page active-page">
+                <div class="neon-header">
+                    <h2><i class="fas fa-code"></i> TẤT CẢ SCRIPT ROBOX</h2>
+                    <p class="subtitle">Tổng hợp script Roblox Blox Fruits chất lượng</p>
+                </div>
+
+                <!-- Thống kê -->
+                <div class="stats">
+                    <div class="stat-card neon-card">
+                        <i class="fas fa-code"></i>
+                        <h3>60+</h3>
+                        <p>Script Free</p>
+                    </div>
+                    <div class="stat-card neon-card">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Active</h3>
+                        <p>Update 2025</p>
+                    </div>
+                    <div class="stat-card neon-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Safe</h3>
+                        <p>Tested Scripts</p>
+                    </div>
+                    <div class="stat-card neon-card">
+                        <i class="fas fa-users"></i>
+                        <h3 id="onlineCount">0</h3>
+                        <p>Online</p>
+                    </div>
+                </div>
+
+                <!-- Thanh tìm kiếm -->
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm script... VD: teddy, kaitun, xeter">
+                </div>
+
+                <!-- Danh mục -->
+                <div class="categories">
+                    <button class="category-btn active" data-category="all">Tất cả</button>
+                    <button class="category-btn" data-category="farming">Farm chính</button>
+                    <button class="category-btn" data-category="auto">Auto Race/Fruit</button>
+                    <button class="category-btn" data-category="utility">Tiện ích</button>
+                    <button class="category-btn" data-category="vietnamese">Vietnamese</button>
+                    <button class="category-btn" data-category="tools">Công cụ</button>
+                </div>
+
+                <!-- Grid Scripts -->
+                <div class="scripts-grid" id="scriptsGrid">
+                    <!-- Scripts sẽ được load bằng JavaScript -->
+                </div>
+            </div>
+
+            <!-- Trang Member Share Scripts -->
+            <div id="memberScriptsPage" class="page">
+                <div class="neon-header">
+                    <h2><i class="fas fa-share-alt"></i> MEMBER SHARE SCRIPTS</h2>
+                    <p class="subtitle">Chia sẻ script của bạn với cộng đồng</p>
+                </div>
+
+                <!-- Nút thêm script (cho tất cả thành viên) -->
+                <div class="add-script-container">
+                    <button class="add-script-btn" id="openAddScriptForm">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Share Script Mới</span>
+                    </button>
+                </div>
+
+                <!-- Form thêm script (ẩn mặc định) -->
+                <div class="add-script-form" id="addScriptForm" style="display: none;">
+                    <div class="form-header">
+                        <h3><i class="fas fa-upload"></i> Upload Script Mới</h3>
+                        <button class="close-form" id="closeFormBtn">&times;</button>
+                    </div>
+                    
+                    <form id="scriptUploadForm">
+                        <div class="form-group">
+                            <label for="scriptName"><i class="fas fa-heading"></i> Tên Script</label>
+                            <input type="text" id="scriptName" placeholder="VD: Teddy Hub V3" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scriptCategory"><i class="fas fa-tag"></i> Thể loại</label>
+                            <select id="scriptCategory" required>
+                                <option value="">Chọn thể loại</option>
+                                <option value="farming">Farm chính</option>
+                                <option value="auto">Auto Race/Fruit</option>
+                                <option value="utility">Tiện ích</option>
+                                <option value="tools">Công cụ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scriptDescription"><i class="fas fa-file-alt"></i> Mô tả</label>
+                            <textarea id="scriptDescription" placeholder="Mô tả về script..." rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scriptCode"><i class="fas fa-code"></i> Code Script (bắt buộc)</label>
+                            <textarea id="scriptCode" placeholder="Dán code script của bạn vào đây..." rows="8" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="scriptImage"><i class="fas fa-image"></i> Ảnh minh họa (không bắt buộc)</label>
+                            <div class="file-upload">
+                                <input type="file" id="scriptImage" accept="image/*">
+                                <label for="scriptImage" class="file-upload-label">
+                                    <i class="fas fa-cloud-upload-alt"></i> Chọn ảnh
+                                </label>
+                                <span id="fileName">Chưa chọn file</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="authorName"><i class="fas fa-user"></i> Tên tác giả</label>
+                            <input type="text" id="authorName" placeholder="Tên của bạn" required>
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i> Upload Script
+                            </button>
+                            <button type="reset" class="reset-btn">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Danh sách script của thành viên -->
+                <div class="member-scripts-grid" id="memberScriptsGrid">
+                    <div class="empty-state">
+                        <i class="fas fa-code-branch"></i>
+                        <h3>Chưa có script nào được chia sẻ</h3>
+                        <p>Hãy là người đầu tiên chia sẻ script của bạn!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trang Chat Help -->
+            <div id="chatPage" class="page">
+                <div class="neon-header">
+                    <h2><i class="fas fa-comments"></i> MEMBER CHAT HELP</h2>
+                    <p class="subtitle">Trò chuyện và hỗ trợ lẫn nhau</p>
+                </div>
+
+                <div class="chat-container">
+                    <!-- Danh sách người online -->
+                    <div class="online-users">
+                        <h3><i class="fas fa-users"></i> Thành viên online</h3>
+                        <div class="users-list" id="usersList">
+                            <!-- Danh sách user sẽ được load -->
+                        </div>
+                    </div>
+
+                    <!-- Khung chat chính -->
+                    <div class="chat-main">
+                        <!-- Messages container -->
+                        <div class="messages-container" id="messagesContainer">
+                            <!-- Tin nhắn sẽ được load ở đây -->
+                            <div class="welcome-message">
+                                <i class="fas fa-comment-medical"></i>
+                                <h3>Chào mừng đến với Meow Chat!</h3>
+                                <p>Đây là nơi mọi người có thể trao đổi và hỗ trợ nhau về script</p>
+                            </div>
+                        </div>
+
+                        <!-- Input area -->
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Nhập tin nhắn của bạn... (Enter để gửi)">
+                            <button id="sendMessageBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                            <button id="emojiBtn">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trang Info -->
+            <div id="infoPage" class="page">
+                <div class="neon-header">
+                    <h2><i class="fas fa-info-circle"></i> THÔNG TIN</h2>
+                    <p class="subtitle">Kết nối với chúng tôi</p>
+                </div>
+
+                <div class="info-container">
+                    <div class="info-card neon-card">
+                        <div class="info-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Group Zalo</h3>
+                        <p>Tham gia group Zalo để nhận hỗ trợ trực tiếp</p>
+                        <a href="https://zalo.me/g/mrzpvn566" target="_blank" class="info-link">
+                            <i class="fas fa-external-link-alt"></i> Tham gia ngay
+                        </a>
+                    </div>
+
+                    <div class="info-card neon-card">
+                        <div class="info-icon">
+                            <i class="fab fa-discord"></i>
+                        </div>
+                        <h3>Discord Server</h3>
+                        <p>Kết nối với cộng đồng trên Discord</p>
+                        <a href="https://discord.gg/sWtCuDf6zw" target="_blank" class="info-link">
+                            <i class="fas fa-external-link-alt"></i> Join Discord
+                        </a>
+                    </div>
+
+                    <div class="info-card neon-card">
+                        <div class="info-icon">
+                            <i class="fab fa-youtube"></i>
+                        </div>
+                        <h3>YouTube Channel</h3>
+                        <p>Theo dõi các video hướng dẫn và cập nhật</p>
+                        <a href="https://www.youtube.com/@Anura-gaming-real" target="_blank" class="info-link">
+                            <i class="fas fa-external-link-alt"></i> Subscribe
+                        </a>
+                    </div>
+
+                    <div class="info-card neon-card">
+                        <div class="info-icon">
+                            <i class="fab fa-tiktok"></i>
+                        </div>
+                        <h3>TikTok</h3>
+                        <p>Theo dõi các video ngắn thú vị</p>
+                        <a href="https://tiktok.com/@anura_gaming" target="_blank" class="info-link">
+                            <i class="fas fa-external-link-alt"></i> Follow TikTok
+                        </a>
+                    </div>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-question-circle"></i> Về Meow Script Web</h3>
+                    <p>Meow Script Web là nền tảng chia sẻ script Roblox miễn phí, nơi cộng đồng có thể chia sẻ, thảo luận và hỗ trợ nhau. Chúng tôi cam kết mang đến những script chất lượng và an toàn cho người dùng.</p>
+                    
+                    <div class="features">
+                        <div class="feature">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Script an toàn</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-bolt"></i>
+                            <span>Update thường xuyên</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-users"></i>
+                            <span>Cộng đồng hỗ trợ</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Responsive Design</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal đăng nhập -->
+            <div class="modal" id="loginModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-sign-in-alt"></i> Đăng nhập</h2>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="login-options">
+                            <button class="login-option google-login" id="modalGoogleLogin">
+                                <i class="fab fa-google"></i>
+                                <span>Đăng nhập với Google</span>
+                            </button>
+                            
+                            <button class="login-option facebook-login" id="modalFacebookLogin">
+                                <i class="fab fa-facebook"></i>
+                                <span>Đăng nhập với Facebook</span>
+                            </button>
+                            
+                            <div class="divider">
+                                <span>hoặc</span>
+                            </div>
+                            
+                            <div class="guest-login">
+                                <h3><i class="fas fa-user-clock"></i> Truy cập nhanh</h3>
+                                <p>Nhập tên để tham gia chat và share script ngay</p>
+                                <input type="text" id="guestName" placeholder="Nhập tên của bạn">
+                                <button class="guest-btn" id="guestLoginBtn">
+                                    <i class="fas fa-play"></i> Bắt đầu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Admin Add Script -->
+            <div class="modal" id="adminScriptModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-plus"></i> Thêm Script (Admin)</h2>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="adminScriptForm">
+                            <div class="form-group">
+                                <label for="adminScriptName">Tên Script</label>
+                                <input type="text" id="adminScriptName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminTrigger">Trigger (từ khóa gọi script)</label>
+                                <input type="text" id="adminTrigger" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminScriptCode">Code Script</label>
+                                <textarea id="adminScriptCode" rows="10" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminCategory">Danh mục</label>
+                                <select id="adminCategory" required>
+                                    <option value="farming">Farm chính</option>
+                                    <option value="auto">Auto Race/Fruit</option>
+                                    <option value="utility">Tiện ích</option>
+                                    <option value="vietnamese">Vietnamese</option>
+                                    <option value="tools">Công cụ</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-upload"></i> Upload Script
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-cat"></i>
+                    <span>MEOW SCRIPT WEB</span>
+                </div>
+                <p>© 2025 Meow Script Web. All scripts are shared for educational purposes only.</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                    <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
+                    <a href="#"><i class="fas fa-file-contract"></i> Terms</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="script.js"></script>
+    <!-- Firebase SDK (cho authentication) -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
+</body>
+</html>
