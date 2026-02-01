@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Thanh điều hướng bên trái -->
@@ -63,13 +64,8 @@
                     <button class="admin-btn" id="addScriptBtn">
                         <i class="fas fa-plus"></i> Thêm Script
                     </button>
-                </div>
-                <div class="auth-buttons">
-                    <button class="auth-btn google-btn" id="googleLogin">
-                        <i class="fab fa-google"></i> Google
-                    </button>
-                    <button class="auth-btn fb-btn" id="facebookLogin">
-                        <i class="fab fa-facebook"></i> Facebook
+                    <button class="admin-btn" id="manageUsersBtn">
+                        <i class="fas fa-users-cog"></i> Quản lý
                     </button>
                 </div>
             </div>
@@ -88,7 +84,7 @@
                 <div class="stats">
                     <div class="stat-card neon-card">
                         <i class="fas fa-code"></i>
-                        <h3>60+</h3>
+                        <h3 id="totalScripts">60+</h3>
                         <p>Script Free</p>
                     </div>
                     <div class="stat-card neon-card">
@@ -178,6 +174,7 @@
                         <div class="form-group">
                             <label for="scriptCode"><i class="fas fa-code"></i> Code Script (bắt buộc)</label>
                             <textarea id="scriptCode" placeholder="Dán code script của bạn vào đây..." rows="8" required></textarea>
+                            <small style="color: #888; margin-top: 5px; display: block;">Script sẽ được admin duyệt trước khi hiển thị công khai</small>
                         </div>
                         
                         <div class="form-group">
@@ -191,14 +188,9 @@
                             </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="authorName"><i class="fas fa-user"></i> Tên tác giả</label>
-                            <input type="text" id="authorName" placeholder="Tên của bạn" required>
-                        </div>
-                        
                         <div class="form-buttons">
                             <button type="submit" class="submit-btn">
-                                <i class="fas fa-paper-plane"></i> Upload Script
+                                <i class="fas fa-paper-plane"></i> Gửi Script
                             </button>
                             <button type="reset" class="reset-btn">
                                 <i class="fas fa-redo"></i> Reset
@@ -207,12 +199,25 @@
                     </form>
                 </div>
 
+                <!-- Tab chuyển đổi -->
+                <div class="member-tabs">
+                    <button class="member-tab active" data-tab="approved">Script đã duyệt</button>
+                    <button class="member-tab" data-tab="pending">Script chờ duyệt</button>
+                    <button class="member-tab" data-tab="my-scripts">Script của tôi</button>
+                </div>
+
                 <!-- Danh sách script của thành viên -->
-                <div class="member-scripts-grid" id="memberScriptsGrid">
-                    <div class="empty-state">
-                        <i class="fas fa-code-branch"></i>
-                        <h3>Chưa có script nào được chia sẻ</h3>
-                        <p>Hãy là người đầu tiên chia sẻ script của bạn!</p>
+                <div class="member-scripts-container">
+                    <div class="member-scripts-grid" id="approvedScriptsGrid">
+                        <!-- Script đã duyệt -->
+                    </div>
+                    
+                    <div class="member-scripts-grid" id="pendingScriptsGrid" style="display: none;">
+                        <!-- Script chờ duyệt -->
+                    </div>
+                    
+                    <div class="member-scripts-grid" id="myScriptsGrid" style="display: none;">
+                        <!-- Script của tôi -->
                     </div>
                 </div>
             </div>
@@ -227,7 +232,7 @@
                 <div class="chat-container">
                     <!-- Danh sách người online -->
                     <div class="online-users">
-                        <h3><i class="fas fa-users"></i> Thành viên online</h3>
+                        <h3><i class="fas fa-users"></i> Thành viên online <span class="online-badge" id="onlineBadge">0</span></h3>
                         <div class="users-list" id="usersList">
                             <!-- Danh sách user sẽ được load -->
                         </div>
@@ -246,14 +251,14 @@
                         </div>
 
                         <!-- Input area -->
-                        <div class="chat-input">
-                            <input type="text" id="messageInput" placeholder="Nhập tin nhắn của bạn... (Enter để gửi)">
-                            <button id="sendMessageBtn">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                            <button id="emojiBtn">
-                                <i class="fas fa-smile"></i>
-                            </button>
+                        <div class="chat-input-container">
+                            <div class="chat-input">
+                                <input type="text" id="messageInput" placeholder="Nhập tin nhắn của bạn... (Enter để gửi)" disabled>
+                                <button id="sendMessageBtn" disabled>
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <small class="chat-note">Vui lòng đăng nhập để chat</small>
                         </div>
                     </div>
                 </div>
@@ -337,38 +342,82 @@
                 </div>
             </div>
 
-            <!-- Modal đăng nhập -->
-            <div class="modal" id="loginModal">
+            <!-- Modal đăng nhập/đăng ký -->
+            <div class="modal" id="authModal">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h2><i class="fas fa-sign-in-alt"></i> Đăng nhập</h2>
+                        <h2><i class="fas fa-user"></i> <span id="authModalTitle">Đăng nhập</span></h2>
                         <button class="close-modal">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <div class="login-options">
-                            <button class="login-option google-login" id="modalGoogleLogin">
-                                <i class="fab fa-google"></i>
-                                <span>Đăng nhập với Google</span>
-                            </button>
-                            
-                            <button class="login-option facebook-login" id="modalFacebookLogin">
-                                <i class="fab fa-facebook"></i>
-                                <span>Đăng nhập với Facebook</span>
-                            </button>
-                            
-                            <div class="divider">
-                                <span>hoặc</span>
-                            </div>
-                            
-                            <div class="guest-login">
-                                <h3><i class="fas fa-user-clock"></i> Truy cập nhanh</h3>
-                                <p>Nhập tên để tham gia chat và share script ngay</p>
-                                <input type="text" id="guestName" placeholder="Nhập tên của bạn">
-                                <button class="guest-btn" id="guestLoginBtn">
-                                    <i class="fas fa-play"></i> Bắt đầu
-                                </button>
-                            </div>
+                        <div class="auth-tabs">
+                            <button class="auth-tab active" data-tab="login">Đăng nhập</button>
+                            <button class="auth-tab" data-tab="register">Đăng ký</button>
                         </div>
+
+                        <!-- Form đăng nhập -->
+                        <form id="loginForm" class="auth-form active-form">
+                            <div class="form-group">
+                                <label for="loginUsername"><i class="fas fa-user"></i> Tên đăng nhập</label>
+                                <input type="text" id="loginUsername" placeholder="Nhập tên đăng nhập" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loginPassword"><i class="fas fa-lock"></i> Mật khẩu</label>
+                                <div class="password-input">
+                                    <input type="password" id="loginPassword" placeholder="Nhập mật khẩu" required>
+                                    <button type="button" class="show-password" data-target="loginPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group remember-me">
+                                <input type="checkbox" id="rememberMe">
+                                <label for="rememberMe">Ghi nhớ đăng nhập</label>
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                            </button>
+                            <p class="auth-switch">
+                                Chưa có tài khoản? <a href="#" id="switchToRegister">Đăng ký ngay</a>
+                            </p>
+                        </form>
+
+                        <!-- Form đăng ký -->
+                        <form id="registerForm" class="auth-form">
+                            <div class="form-group">
+                                <label for="registerUsername"><i class="fas fa-user"></i> Tên đăng nhập</label>
+                                <input type="text" id="registerUsername" placeholder="Tên hiển thị (3-20 ký tự)" required>
+                                <small class="form-hint">Tên sẽ hiển thị khi chat và share script</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerPassword"><i class="fas fa-lock"></i> Mật khẩu</label>
+                                <div class="password-input">
+                                    <input type="password" id="registerPassword" placeholder="Mật khẩu (ít nhất 6 ký tự)" required>
+                                    <button type="button" class="show-password" data-target="registerPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword"><i class="fas fa-lock"></i> Xác nhận mật khẩu</label>
+                                <div class="password-input">
+                                    <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                                    <button type="button" class="show-password" data-target="confirmPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerEmail"><i class="fas fa-envelope"></i> Email (không bắt buộc)</label>
+                                <input type="email" id="registerEmail" placeholder="Email để khôi phục mật khẩu">
+                            </div>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-user-plus"></i> Đăng ký
+                            </button>
+                            <p class="auth-switch">
+                                Đã có tài khoản? <a href="#" id="switchToLogin">Đăng nhập ngay</a>
+                            </p>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -411,6 +460,35 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal Admin Management -->
+            <div class="modal" id="adminManageModal">
+                <div class="modal-content" style="max-width: 900px;">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-users-cog"></i> Quản lý Admin</h2>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="admin-tabs">
+                            <button class="admin-tab active" data-tab="pending-scripts">Script chờ duyệt <span class="badge" id="pendingCount">0</span></button>
+                            <button class="admin-tab" data-tab="manage-users">Quản lý người dùng</button>
+                            <button class="admin-tab" data-tab="system-stats">Thống kê hệ thống</button>
+                        </div>
+                        
+                        <div class="admin-tab-content" id="pendingScriptsTab">
+                            <!-- Script chờ duyệt -->
+                        </div>
+                        
+                        <div class="admin-tab-content" id="manageUsersTab" style="display: none;">
+                            <!-- Quản lý người dùng -->
+                        </div>
+                        
+                        <div class="admin-tab-content" id="systemStatsTab" style="display: none;">
+                            <!-- Thống kê -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Footer -->
@@ -422,10 +500,10 @@
                 </div>
                 <p>© 2025 Meow Script Web. All scripts are shared for educational purposes only.</p>
                 <div class="footer-links">
-                    <a href="#"><i class="fab fa-github"></i> GitHub</a>
-                    <a href="#"><i class="fas fa-question-circle"></i> Help</a>
-                    <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
-                    <a href="#"><i class="fas fa-file-contract"></i> Terms</a>
+                    <a href="#" id="privacyLink"><i class="fas fa-shield-alt"></i> Privacy</a>
+                    <a href="#" id="termsLink"><i class="fas fa-file-contract"></i> Terms</a>
+                    <a href="#" id="contactLink"><i class="fas fa-envelope"></i> Contact</a>
+                    <a href="#" id="reportLink"><i class="fas fa-flag"></i> Report</a>
                 </div>
             </div>
         </footer>
@@ -434,9 +512,5 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="script.js"></script>
-    <!-- Firebase SDK (cho authentication) -->
-    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
 </body>
 </html>
