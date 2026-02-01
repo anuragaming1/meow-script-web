@@ -232,38 +232,6 @@ body {
     box-shadow: 0 0 20px var(--neon-pink);
 }
 
-.auth-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.auth-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: var(--transition);
-}
-
-.google-btn {
-    background: white;
-    color: #4285f4;
-}
-
-.facebook-btn {
-    background: #1877f2;
-    color: white;
-}
-
-.auth-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-}
-
 /* Content Container */
 .content-container {
     flex: 1;
@@ -489,7 +457,7 @@ body {
 .script-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+    background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink);
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -528,6 +496,35 @@ body {
 }
 
 /* Member Scripts Page */
+.member-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 30px 0;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    padding-bottom: 10px;
+}
+
+.member-tab {
+    padding: 10px 25px;
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    color: var(--text-light);
+    border-radius: 25px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.member-tab:hover {
+    background: rgba(0, 243, 255, 0.2);
+}
+
+.member-tab.active {
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+    border: none;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
 .add-script-container {
     text-align: center;
     margin: 30px 0;
@@ -632,6 +629,39 @@ body {
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
 }
 
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 50px;
+    width: 100%;
+}
+
+.show-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px;
+}
+
+.show-password:hover {
+    color: var(--neon-blue);
+}
+
+.form-hint {
+    display: block;
+    margin-top: 5px;
+    color: #888;
+    font-size: 0.85rem;
+}
+
 .file-upload {
     position: relative;
     display: flex;
@@ -713,6 +743,10 @@ body {
 }
 
 /* Member Scripts Grid */
+.member-scripts-container {
+    position: relative;
+}
+
 .member-scripts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -759,6 +793,15 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.online-badge {
+    background: var(--neon-green);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 5px;
 }
 
 .users-list {
@@ -855,11 +898,14 @@ body {
     line-height: 1.5;
 }
 
-.chat-input {
-    display: flex;
+.chat-input-container {
     padding: 15px;
     background: rgba(5, 5, 16, 0.9);
     border-top: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.chat-input {
+    display: flex;
     gap: 10px;
 }
 
@@ -879,6 +925,11 @@ body {
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
 }
 
+.chat-input input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .chat-input button {
     width: 50px;
     height: 50px;
@@ -894,9 +945,22 @@ body {
     justify-content: center;
 }
 
-.chat-input button:hover {
+.chat-input button:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 0 20px var(--neon-blue);
+}
+
+.chat-input button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.chat-note {
+    display: block;
+    margin-top: 10px;
+    color: #ff9800;
+    font-size: 0.85rem;
+    text-align: center;
 }
 
 /* Info Page */
@@ -1013,6 +1077,86 @@ body {
     font-weight: 500;
 }
 
+/* Authentication Tabs */
+.auth-tabs {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.auth-tab:hover {
+    color: var(--neon-blue);
+}
+
+.auth-tab.active {
+    color: var(--neon-blue);
+}
+
+.auth-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--neon-blue);
+    border-radius: 3px;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active-form {
+    display: block;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--neon-blue);
+}
+
+.remember-me label {
+    margin: 0;
+    cursor: pointer;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-dim);
+}
+
+.auth-switch a {
+    color: var(--neon-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
 /* Modal */
 .modal {
     display: none;
@@ -1084,122 +1228,51 @@ body {
     padding: 30px;
 }
 
-.login-options {
+/* Admin Tabs */
+.admin-tabs {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    padding-bottom: 10px;
 }
 
-.login-option {
-    padding: 20px;
-    border: 2px solid rgba(0, 243, 255, 0.3);
-    border-radius: 15px;
-    background: rgba(10, 10, 26, 0.8);
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    transition: var(--transition);
-}
-
-.login-option:hover {
-    border-color: var(--neon-blue);
+.admin-tab {
+    padding: 10px 20px;
     background: rgba(0, 243, 255, 0.1);
-    transform: translateY(-3px);
-}
-
-.google-login {
-    background: rgba(66, 133, 244, 0.1);
-    border-color: rgba(66, 133, 244, 0.5);
-}
-
-.facebook-login {
-    background: rgba(24, 119, 242, 0.1);
-    border-color: rgba(24, 119, 242, 0.5);
-}
-
-.divider {
-    text-align: center;
-    position: relative;
-    margin: 20px 0;
-}
-
-.divider::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: rgba(0, 243, 255, 0.3);
-}
-
-.divider span {
-    background: var(--dark-bg);
-    padding: 0 20px;
-    color: var(--text-dim);
-    position: relative;
-    z-index: 1;
-}
-
-.guest-login {
-    text-align: center;
-}
-
-.guest-login h3 {
-    color: var(--neon-green);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.guest-login p {
-    color: var(--text-dim);
-    margin-bottom: 20px;
-}
-
-.guest-login input {
-    width: 100%;
-    padding: 15px;
-    background: rgba(10, 10, 26, 0.8);
     border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 10px;
-    color: white;
-    font-size: 1rem;
-    margin-bottom: 20px;
-}
-
-.guest-login input:focus {
-    outline: none;
-    border-color: var(--neon-green);
-}
-
-.guest-btn {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 500;
+    color: var(--text-light);
+    border-radius: 25px;
     cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    transition: var(--transition);
+    gap: 8px;
 }
 
-.guest-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4);
+.admin-tab:hover {
+    background: rgba(0, 243, 255, 0.2);
+}
+
+.admin-tab.active {
+    background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+    border: none;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+.badge {
+    background: var(--neon-pink);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.admin-tab-content {
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 /* Footer */
