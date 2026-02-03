@@ -62,19 +62,35 @@
             font-weight: 600;
         }
         
-        .script-category {
-            background-color: rgba(0, 255, 157, 0.1);
-            color: var(--neon-green);
+        .script-views {
+            background-color: rgba(0, 243, 255, 0.1);
+            color: var(--neon-blue);
         }
         
         .script-date {
-            background-color: rgba(0, 243, 255, 0.1);
-            color: var(--neon-blue);
+            background-color: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
         }
         
         .script-downloads {
             background-color: rgba(255, 0, 255, 0.1);
             color: var(--neon-pink);
+        }
+        
+        .script-hashtags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .script-hashtag {
+            background-color: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
         }
         
         .script-description {
@@ -159,6 +175,8 @@
             word-wrap: break-word;
             border: 1px solid rgba(0, 243, 255, 0.2);
             min-height: 200px;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .instructions {
@@ -190,6 +208,26 @@
             color: var(--neon-green);
         }
         
+        .warning-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: rgba(255, 68, 68, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #ff4444;
+        }
+        
+        .warning-box h4 {
+            color: #ff8888;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .warning-box p {
+            color: #ffaaaa;
+        }
+        
         @media (max-width: 768px) {
             .detail-container {
                 padding: 20px;
@@ -212,6 +250,11 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            .script-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -222,13 +265,18 @@
         </a>
         
         <div class="script-header">
-            <h1 class="script-title" id="scriptTitle">Script Title</h1>
+            <h1 class="script-title" id="scriptTitle">Loading...</h1>
             <div class="script-meta">
-                <span class="script-category" id="scriptCategory">Category</span>
-                <span class="script-date" id="scriptDate">Date</span>
-                <span class="script-downloads" id="scriptDownloads">Downloads</span>
+                <span class="script-views" id="scriptViews">0 views</span>
+                <span class="script-date" id="scriptDate">Loading...</span>
+                <span class="script-downloads" id="scriptDownloads">0 downloads</span>
             </div>
-            <p id="scriptDescription">Script description will appear here...</p>
+            
+            <div class="script-hashtags" id="scriptHashtags">
+                <!-- Hashtags will be loaded here -->
+            </div>
+            
+            <p id="scriptDescription">Loading description...</p>
         </div>
         
         <div class="script-code-container">
@@ -236,15 +284,14 @@
                 <h3><i class="fas fa-code"></i> Script Code</h3>
                 <div class="code-actions">
                     <button class="btn-action btn-copy" onclick="copyScript()">
-                        <i class="far fa-copy"></i> Copy
+                        <i class="far fa-copy"></i> Copy Script
                     </button>
                     <button class="btn-action btn-download" onclick="downloadScript()">
                         <i class="fas fa-download"></i> Download
                     </button>
                 </div>
             </div>
-            <pre id="scriptCode">// Script code will appear here
-// Loading...</pre>
+            <pre id="scriptCode">// Loading script...</pre>
         </div>
         
         <div class="instructions">
@@ -258,11 +305,11 @@
                 <li><strong>Enjoy the features!</strong> Look for the GUI that appears</li>
             </ol>
             
-            <div style="margin-top: 25px; padding: 20px; background-color: rgba(255, 68, 68, 0.1); border-radius: 12px; border-left: 4px solid #ff4444;">
-                <h4 style="color: #ff8888; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <div class="warning-box">
+                <h4>
                     <i class="fas fa-exclamation-triangle"></i> Important Notice
                 </h4>
-                <p style="color: #ffaaaa;">Use scripts at your own risk. We are not responsible for any bans or account issues. Scripts are for educational purposes only.</p>
+                <p>Use scripts at your own risk. We are not responsible for any bans or account issues. Scripts are for educational purposes only.</p>
             </div>
         </div>
     </div>
@@ -272,12 +319,30 @@
             const script = JSON.parse(localStorage.getItem('currentScript') || '{}');
             
             if (script.name) {
+                // Update script info
                 document.getElementById('scriptTitle').textContent = script.name;
-                document.getElementById('scriptCategory').textContent = script.category || 'Script';
-                document.getElementById('scriptDate').textContent = 'Today';
-                document.getElementById('scriptDownloads').textContent = '1000+ Downloads';
-                document.getElementById('scriptDescription').textContent = script.description || 'No description available';
+                document.getElementById('scriptViews').textContent = `${script.views || 0} views`;
+                document.getElementById('scriptDownloads').textContent = `${script.downloads || 0} downloads`;
+                document.getElementById('scriptDescription').textContent = script.description || 'No description available.';
                 document.getElementById('scriptCode').textContent = script.code || '// No code available';
+                
+                // Format date
+                const date = new Date(script.date || new Date());
+                document.getElementById('scriptDate').textContent = date.toLocaleDateString('vi-VN');
+                
+                // Display hashtags
+                const hashtagsDiv = document.getElementById('scriptHashtags');
+                if (script.hashtags && script.hashtags.length > 0) {
+                    hashtagsDiv.innerHTML = script.hashtags.map(tag => 
+                        `<span class="script-hashtag">${tag}</span>`
+                    ).join('');
+                } else {
+                    hashtagsDiv.innerHTML = '<span class="script-hashtag">#script</span>';
+                }
+                
+                // Update view count in main data
+                updateViewCount(script.id);
+                
             } else {
                 document.getElementById('scriptTitle').textContent = 'Script Not Found';
                 document.getElementById('scriptDescription').textContent = 'Please select a script from the home page.';
@@ -285,14 +350,65 @@
             }
         });
         
+        function updateViewCount(scriptId) {
+            // Load all scripts
+            const savedData = localStorage.getItem('scriptData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    const scripts = data.scripts || [];
+                    
+                    // Find and update the script
+                    const scriptIndex = scripts.findIndex(s => s.id === scriptId);
+                    if (scriptIndex !== -1) {
+                        scripts[scriptIndex].views = (scripts[scriptIndex].views || 0) + 1;
+                        
+                        // Save back to localStorage
+                        data.scripts = scripts;
+                        data.totalViews = scripts.reduce((sum, s) => sum + (s.views || 0), 0);
+                        localStorage.setItem('scriptData', JSON.stringify(data));
+                    }
+                } catch (error) {
+                    console.error('Error updating view count:', error);
+                }
+            }
+        }
+        
         function copyScript() {
             const code = document.getElementById('scriptCode').textContent;
             navigator.clipboard.writeText(code).then(() => {
                 alert('Script copied to clipboard!');
+                
+                // Update download count
+                const script = JSON.parse(localStorage.getItem('currentScript') || '{}');
+                if (script.id) {
+                    updateDownloadCount(script.id);
+                }
             }).catch(err => {
                 console.error('Failed to copy: ', err);
                 alert('Failed to copy script. Please try again.');
             });
+        }
+        
+        function updateDownloadCount(scriptId) {
+            const savedData = localStorage.getItem('scriptData');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    const scripts = data.scripts || [];
+                    
+                    const scriptIndex = scripts.findIndex(s => s.id === scriptId);
+                    if (scriptIndex !== -1) {
+                        scripts[scriptIndex].downloads = (scripts[scriptIndex].downloads || 0) + 1;
+                        
+                        data.scripts = scripts;
+                        data.totalDownloads = scripts.reduce((sum, s) => sum + (s.downloads || 0), 0);
+                        localStorage.setItem('scriptData', JSON.stringify(data));
+                    }
+                } catch (error) {
+                    console.error('Error updating download count:', error);
+                }
+            }
         }
         
         function downloadScript() {
@@ -308,6 +424,14 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            alert('Script downloaded!');
+            
+            // Update download count
+            const script = JSON.parse(localStorage.getItem('currentScript') || '{}');
+            if (script.id) {
+                updateDownloadCount(script.id);
+            }
         }
     </script>
 </body>
