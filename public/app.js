@@ -1,252 +1,104 @@
-// ========== SCRIPT DATA MANAGER ==========
-class ScriptManager {
-    constructor() {
-        this.scripts = [];
-        this.loadFromStorage();
-        this.setupEventListeners();
-        this.updateStats();
-    }
+// Main Application JavaScript - Version 3.0
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+// ========== GLOBAL VARIABLES ==========
+let allScripts = [];
+let displayedScripts = [];
+let currentPage = 1;
+const scriptsPerPage = 12;
+let currentFilter = 'all';
+let currentSearch = '';
+
+// ========== INITIALIZATION ==========
+function initializeApp() {
+    // Load scripts from localStorage
+    loadScriptsFromStorage();
     
-    loadFromStorage() {
-        const saved = localStorage.getItem('meowScripts');
-        if (saved) {
-            this.scripts = JSON.parse(saved);
-            console.log(`Loaded ${this.scripts.length} scripts from storage`);
-        } else {
-            this.scripts = [];
-            console.log('No scripts found in storage');
-        }
-        
-        // Sort by date (newest first)
-        this.scripts.sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
+    // Initialize navigation
+    setupNavigation();
     
-    saveToStorage() {
-        localStorage.setItem('meowScripts', JSON.stringify(this.scripts));
-        this.updateStats();
-    }
+    // Setup event listeners
+    setupEventListeners();
     
-    addScript(scriptData) {
-        const newScript = {
-            id: Date.now(),
-            name: scriptData.name,
-            hashtags: scriptData.hashtags,
-            description: scriptData.description,
-            code: scriptData.code,
-            date: new Date().toISOString(),
-            views: 0,
-            downloads: 0
-        };
-        
-        // Add to beginning of array
-        this.scripts.unshift(newScript);
-        this.saveToStorage();
-        return newScript;
-    }
+    // Load recent scripts on home page
+    loadRecentScripts();
     
-    updateScript(id, data) {
-        const index = this.scripts.findIndex(s => s.id === id);
-        if (index !== -1) {
-            this.scripts[index] = { ...this.scripts[index], ...data };
-            this.saveToStorage();
-            return true;
-        }
-        return false;
-    }
+    // Load all scripts with pagination
+    loadAllScripts();
     
-    deleteScript(id) {
-        const index = this.scripts.findIndex(s => s.id === id);
-        if (index !== -1) {
-            this.scripts.splice(index, 1);
-            this.saveToStorage();
-            return true;
-        }
-        return false;
-    }
+    // Load hashtag filters
+    loadHashtagFilters();
     
-    incrementViews(id) {
-        const script = this.scripts.find(s => s.id === id);
-        if (script) {
-            script.views++;
-            this.saveToStorage();
-        }
-    }
+    // Update statistics
+    updateStatistics();
+}
+
+// ========== DATA MANAGEMENT ==========
+function loadScriptsFromStorage() {
+    // Try to load from localStorage (set by admin panel)
+    const savedData = localStorage.getItem('scriptData');
     
-    incrementDownloads(id) {
-        const script = this.scripts.find(s => s.id === id);
-        if (script) {
-            script.downloads++;
-            this.saveToStorage();
-        }
-    }
-    
-    searchScripts(query) {
-        if (!query.trim()) return this.scripts;
-        
-        const searchTerm = query.toLowerCase();
-        return this.scripts.filter(script => {
-            // Search in name
-            if (script.name.toLowerCase().includes(searchTerm)) return true;
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            allScripts = data.scripts || [];
             
-            // Search in description
-            if (script.description.toLowerCase().includes(searchTerm)) return true;
+            // Sort by date (newest first)
+            allScripts.sort((a, b) => new Date(b.date) - new Date(a.date));
             
-            // Search in hashtags
-            if (script.hashtags.some(tag => tag.toLowerCase().includes(searchTerm))) return true;
-            
-            return false;
-        });
-    }
-    
-    getPopularHashtags() {
-        const hashtagCount = {};
-        this.scripts.forEach(script => {
-            script.hashtags.forEach(tag => {
-                hashtagCount[tag] = (hashtagCount[tag] || 0) + 1;
-            });
-        });
-        
-        return Object.entries(hashtagCount)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(([tag]) => tag);
-    }
-    
-    updateStats() {
-        const totalScripts = this.scripts.length;
-        const totalViews = this.scripts.reduce((sum, script) => sum + script.views, 0);
-        
-        // Update sidebar
-        document.getElementById('totalScripts')?.textContent = totalScripts;
-        document.getElementById('totalViews')?.textContent = totalViews.toLocaleString();
-        
-        // Update script count
-        const scriptCountElement = document.getElementById('scriptCount');
-        if (scriptCountElement) {
-            scriptCountElement.textContent = `(${totalScripts} scripts)`;
+            console.log(`Loaded ${allScripts.length} scripts from storage`);
+        } catch (error) {
+            console.error('Error loading scripts from storage:', error);
+            allScripts = [];
         }
-    }
-    
-    setupEventListeners() {
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const page = this.id.replace('nav', '').toLowerCase();
-                showPage(page);
-            });
-        });
-        
-        // Menu toggle for mobile
-        document.getElementById('menuToggle')?.addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('active');
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeModal();
-        });
-        
-        // Close modal when clicking outside
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
-        });
-    }
-    
-    displayScripts(scripts) {
-        const grid = document.getElementById('allScripts');
-        if (!grid) return;
-        
-        if (scripts.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-code"></i>
-                    <h3>No scripts found</h3>
-                    <p>Use the admin panel to add your first script!</p>
-                    <a href="admin.html" target="_blank" class="btn-primary">
-                        <i class="fas fa-plus"></i> Add First Script
-                    </a>
-                </div>
-            `;
-            return;
-        }
-        
-        grid.innerHTML = scripts.map(script => `
-            <div class="script-card" data-id="${script.id}">
-                <h3>${script.name}</h3>
-                <div class="hashtags-container">
-                    ${script.hashtags.map(tag => `<span class="hashtag">#${tag}</span>`).join('')}
-                </div>
-                <p>${script.description}</p>
-                <div class="script-card-footer">
-                    <div class="script-meta-info">
-                        <span class="views-count">
-                            <i class="fas fa-eye"></i> ${script.views.toLocaleString()}
-                        </span>
-                        <span>${formatDate(script.date)}</span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-        // Add click event to each card
-        document.querySelectorAll('.script-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const id = parseInt(card.dataset.id);
-                const script = this.scripts.find(s => s.id === id);
-                if (script) this.showScriptDetail(script);
-            });
-        });
-    }
-    
-    showScriptDetail(script) {
-        // Increment views
-        this.incrementViews(script.id);
-        
-        // Update modal content
-        document.getElementById('modalTitle').textContent = script.name;
-        document.getElementById('modalDescription').textContent = script.description;
-        document.getElementById('modalViews').textContent = script.views.toLocaleString();
-        document.getElementById('modalDownloads').textContent = script.downloads.toLocaleString();
-        document.getElementById('modalCode').textContent = script.code;
-        
-        // Update hashtags
-        const hashtagsContainer = document.getElementById('modalHashtags');
-        hashtagsContainer.innerHTML = script.hashtags
-            .map(tag => `<span class="hashtag">#${tag}</span>`)
-            .join('');
-        
-        // Store current script ID for download/copy
-        window.currentScriptId = script.id;
-        
-        // Show modal
-        openModal('scriptModal');
-    }
-    
-    displayPopularHashtags() {
-        const container = document.getElementById('popularHashtags');
-        if (!container) return;
-        
-        const popularTags = this.getPopularHashtags();
-        if (popularTags.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted); font-size: 14px;">No hashtags yet</p>';
-            return;
-        }
-        
-        container.innerHTML = popularTags.map(tag => `
-            <button class="hashtag-filter" onclick="filterByHashtag('${tag}')">
-                #${tag}
-            </button>
-        `).join('');
+    } else {
+        // No saved scripts, start with empty array
+        allScripts = [];
+        console.log('No scripts found in storage');
     }
 }
 
-// ========== GLOBAL INSTANCE ==========
-let scriptManager;
+function saveScriptsToStorage() {
+    const totalViews = allScripts.reduce((sum, script) => sum + script.views, 0);
+    const totalDownloads = allScripts.reduce((sum, script) => sum + script.downloads, 0);
+    
+    const data = {
+        scripts: allScripts,
+        lastUpdate: new Date().toISOString(),
+        totalViews: totalViews,
+        totalDownloads: totalDownloads
+    };
+    
+    localStorage.setItem('scriptData', JSON.stringify(data));
+}
 
-// ========== PAGE MANAGEMENT ==========
+// ========== NAVIGATION ==========
+function setupNavigation() {
+    // Navigation buttons
+    const navItems = document.querySelectorAll('.nav-item[data-page]');
+    navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            showPage(page);
+            
+            // Update active state
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+    
+    // Menu toggle for mobile
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    }
+}
+
 function showPage(page) {
     // Hide all pages
     document.querySelectorAll('.page').forEach(p => {
@@ -258,28 +110,328 @@ function showPage(page) {
     if (pageElement) {
         pageElement.classList.add('active');
         
-        // Update active nav
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        document.getElementById('nav' + page.charAt(0).toUpperCase() + page.slice(1))?.classList.add('active');
-        
         // Update page title
         const titles = {
             home: 'Meow Script Collection',
+            scripts: 'All Scripts',
             info: 'About & Contact'
         };
         document.getElementById('pageTitle').textContent = titles[page] || 'Meow Script';
         
-        // Load data if home page
-        if (page === 'home') {
-            scriptManager.displayScripts(scriptManager.scripts);
-            scriptManager.displayPopularHashtags();
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Load specific content for page
+        if (page === 'scripts') {
+            resetPagination();
+            loadAllScripts();
+        } else if (page === 'home') {
+            loadRecentScripts();
         }
     }
 }
 
-// ========== MODAL FUNCTIONS ==========
+// ========== SCRIPT DISPLAY ==========
+function loadRecentScripts() {
+    const grid = document.getElementById('recentScripts');
+    if (!grid) return;
+    
+    // Get first 6 scripts (most recent)
+    const recent = allScripts.slice(0, 6);
+    displayScripts(recent, grid, 'recent');
+    
+    if (recent.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fas fa-code" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                <p>No scripts available yet. Check back soon!</p>
+            </div>
+        `;
+    }
+}
+
+function loadAllScripts() {
+    const grid = document.getElementById('allScripts');
+    if (!grid) return;
+    
+    // Filter scripts based on current filter and search
+    let filteredScripts = filterScripts(allScripts);
+    
+    // Apply pagination
+    const startIndex = (currentPage - 1) * scriptsPerPage;
+    const endIndex = startIndex + scriptsPerPage;
+    displayedScripts = filteredScripts.slice(startIndex, endIndex);
+    
+    // Display scripts
+    displayScripts(displayedScripts, grid, 'all');
+    
+    // Update script count
+    const scriptCount = document.getElementById('scriptCount');
+    if (scriptCount) {
+        scriptCount.textContent = `(${filteredScripts.length})`;
+    }
+    
+    // Show/hide load more button
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+        if (endIndex < filteredScripts.length) {
+            loadMoreBtn.style.display = 'block';
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+    
+    if (filteredScripts.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--text-muted);">
+                <i class="fas fa-search" style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;"></i>
+                <h3 style="color: var(--neon-blue); margin-bottom: 10px;">No Scripts Found</h3>
+                <p>Try adjusting your search or filter</p>
+            </div>
+        `;
+    }
+}
+
+function displayScripts(scripts, container, type) {
+    if (scripts.length === 0) {
+        if (type === 'recent') {
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fas fa-code" style="font-size: 48px; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <p>No scripts available yet. Check back soon!</p>
+                </div>
+            `;
+        }
+        return;
+    }
+    
+    let html = '';
+    scripts.forEach(script => {
+        const date = new Date(script.date);
+        const formattedDate = date.toLocaleDateString('vi-VN');
+        
+        html += `
+            <div class="script-card" onclick="showScriptDetail(${script.id})">
+                <div class="script-card-header">
+                    <h3>${script.name}</h3>
+                    ${script.views >= 1000 ? '<span class="script-badge">POPULAR</span>' : ''}
+                </div>
+                <p>${script.description || 'No description available.'}</p>
+                <div class="script-card-footer">
+                    <div class="script-hashtags">
+                        ${script.hashtags && script.hashtags.length > 0 
+                            ? script.hashtags.slice(0, 3).map(tag => 
+                                `<span class="hashtag">${tag}</span>`
+                            ).join('') 
+                            : '<span class="hashtag">#script</span>'
+                        }
+                        ${script.hashtags && script.hashtags.length > 3 
+                            ? `<span class="hashtag">+${script.hashtags.length - 3}</span>` 
+                            : ''
+                        }
+                    </div>
+                    <div class="script-stats">
+                        <span><i class="fas fa-eye"></i> ${script.views.toLocaleString()}</span>
+                        <span><i class="far fa-calendar"></i> ${formattedDate}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// ========== FILTER & SEARCH ==========
+function filterScripts(scripts) {
+    let filtered = [...scripts];
+    
+    // Apply hashtag filter
+    if (currentFilter !== 'all' && currentFilter !== '') {
+        filtered = filtered.filter(script => 
+            script.hashtags && 
+            script.hashtags.some(tag => 
+                tag.toLowerCase().includes(currentFilter.toLowerCase())
+            )
+        );
+    }
+    
+    // Apply search filter
+    if (currentSearch.trim() !== '') {
+        const searchTerm = currentSearch.toLowerCase().trim();
+        filtered = filtered.filter(script => 
+            script.name.toLowerCase().includes(searchTerm) ||
+            script.description.toLowerCase().includes(searchTerm) ||
+            (script.hashtags && script.hashtags.some(tag => 
+                tag.toLowerCase().includes(searchTerm)
+            ))
+        );
+    }
+    
+    return filtered;
+}
+
+function searchScripts() {
+    const searchInput = document.getElementById('searchInput');
+    currentSearch = searchInput ? searchInput.value : '';
+    
+    if (document.getElementById('scriptsPage').classList.contains('active')) {
+        resetPagination();
+        loadAllScripts();
+    } else {
+        loadRecentScripts();
+    }
+}
+
+function searchAllScripts() {
+    const searchInput = document.getElementById('globalSearch');
+    currentSearch = searchInput ? searchInput.value : '';
+    resetPagination();
+    loadAllScripts();
+}
+
+function filterByHashtag(hashtag) {
+    // Remove # if present
+    const cleanHashtag = hashtag.startsWith('#') ? hashtag.substring(1) : hashtag;
+    
+    if (currentFilter === cleanHashtag) {
+        // Clear filter if same hashtag clicked again
+        currentFilter = 'all';
+    } else {
+        currentFilter = cleanHashtag;
+    }
+    
+    // Update active state of hashtag buttons
+    document.querySelectorAll('.hashtag-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-hashtag') === cleanHashtag) {
+            btn.classList.toggle('active', currentFilter === cleanHashtag);
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    resetPagination();
+    loadAllScripts();
+}
+
+function loadHashtagFilters() {
+    const hashtagList = document.getElementById('hashtagList');
+    if (!hashtagList) return;
+    
+    // Get all unique hashtags from scripts
+    const allHashtags = [];
+    allScripts.forEach(script => {
+        if (script.hashtags) {
+            script.hashtags.forEach(tag => {
+                const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+                if (!allHashtags.includes(cleanTag)) {
+                    allHashtags.push(cleanTag);
+                }
+            });
+        }
+    });
+    
+    // Sort hashtags by frequency
+    const hashtagCounts = {};
+    allScripts.forEach(script => {
+        if (script.hashtags) {
+            script.hashtags.forEach(tag => {
+                const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+                hashtagCounts[cleanTag] = (hashtagCounts[cleanTag] || 0) + 1;
+            });
+        }
+    });
+    
+    allHashtags.sort((a, b) => hashtagCounts[b] - hashtagCounts[a]);
+    
+    // Display top 20 hashtags
+    const topHashtags = allHashtags.slice(0, 20);
+    
+    if (topHashtags.length === 0) {
+        hashtagList.innerHTML = `
+            <span style="color: var(--text-muted); font-style: italic;">
+                No hashtags available yet
+            </span>
+        `;
+        return;
+    }
+    
+    let html = '';
+    topHashtags.forEach(tag => {
+        const count = hashtagCounts[tag] || 0;
+        html += `
+            <button class="hashtag-filter-btn ${currentFilter === tag ? 'active' : ''}" 
+                    data-hashtag="${tag}"
+                    onclick="filterByHashtag('${tag}')"
+                    title="${count} script${count !== 1 ? 's' : ''}">
+                #${tag}
+            </button>
+        `;
+    });
+    
+    hashtagList.innerHTML = html;
+}
+
+// ========== PAGINATION ==========
+function resetPagination() {
+    currentPage = 1;
+}
+
+function loadMoreScripts() {
+    currentPage++;
+    loadAllScripts();
+    
+    // Scroll to newly loaded scripts
+    const grid = document.getElementById('allScripts');
+    if (grid) {
+        const newCards = grid.querySelectorAll('.script-card');
+        if (newCards.length > 0) {
+            const lastCard = newCards[newCards.length - 1];
+            lastCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+}
+
+// ========== SCRIPT DETAIL ==========
+function showScriptDetail(scriptId) {
+    const script = allScripts.find(s => s.id === scriptId);
+    if (!script) {
+        showToast('Script not found!');
+        return;
+    }
+    
+    // Increase view count
+    script.views++;
+    saveScriptsToStorage();
+    
+    // Update statistics
+    updateStatistics();
+    
+    // Save script to localStorage for detail page
+    localStorage.setItem('currentScript', JSON.stringify(script));
+    
+    // Open modal
+    document.getElementById('modalTitle').textContent = script.name;
+    document.getElementById('modalDescription').textContent = script.description || 'No description available.';
+    document.getElementById('modalCode').textContent = script.code;
+    document.getElementById('modalViews').textContent = `${script.views.toLocaleString()} views`;
+    
+    const date = new Date(script.date);
+    document.getElementById('modalDate').textContent = date.toLocaleDateString('vi-VN');
+    
+    // Display hashtags
+    const hashtagsDiv = document.getElementById('modalHashtags');
+    if (script.hashtags && script.hashtags.length > 0) {
+        hashtagsDiv.innerHTML = script.hashtags.map(tag => 
+            `<span class="hashtag">${tag}</span>`
+        ).join('');
+    } else {
+        hashtagsDiv.innerHTML = '<span class="hashtag">#script</span>';
+    }
+    
+    openModal('scriptModal');
+}
+
 function openModal(modalId) {
     document.getElementById(modalId).style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -292,25 +444,33 @@ function closeModal() {
     document.body.style.overflow = 'auto';
 }
 
+function showDonate() {
+    openModal('donateModal');
+}
+
 // ========== SCRIPT ACTIONS ==========
 function copyScript() {
     const code = document.getElementById('modalCode').textContent;
     navigator.clipboard.writeText(code).then(() => {
-        alert('Script copied to clipboard!');
+        showToast('Script copied to clipboard!');
+        
+        // Find and update download count
+        const scriptName = document.getElementById('modalTitle').textContent;
+        const script = allScripts.find(s => s.name === scriptName);
+        if (script) {
+            script.downloads++;
+            saveScriptsToStorage();
+            updateStatistics();
+        }
     }).catch(err => {
         console.error('Failed to copy:', err);
-        alert('Failed to copy. Please try again.');
+        showToast('Failed to copy. Please try again.');
     });
 }
 
 function downloadScript() {
     const code = document.getElementById('modalCode').textContent;
     const name = document.getElementById('modalTitle').textContent;
-    
-    // Increment download count
-    if (window.currentScriptId) {
-        scriptManager.incrementDownloads(window.currentScriptId);
-    }
     
     const blob = new Blob([code], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -322,71 +482,111 @@ function downloadScript() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    alert('Script downloaded!');
-}
-
-// ========== SEARCH & FILTER ==========
-function searchScripts() {
-    const searchInput = document.getElementById('searchInput') || document.getElementById('searchFilter');
-    const query = searchInput ? searchInput.value : '';
+    showToast('Script downloaded!');
     
-    const results = scriptManager.searchScripts(query);
-    scriptManager.displayScripts(results);
-    
-    // Update count
-    const countElement = document.getElementById('scriptCount');
-    if (countElement) {
-        countElement.textContent = `(${results.length} scripts found)`;
+    // Find and update download count
+    const script = allScripts.find(s => s.name === name);
+    if (script) {
+        script.downloads++;
+        saveScriptsToStorage();
+        updateStatistics();
     }
 }
 
-function filterByHashtag(tag) {
-    const searchInput = document.getElementById('searchInput') || document.getElementById('searchFilter');
+// ========== STATISTICS ==========
+function updateStatistics() {
+    const totalViews = allScripts.reduce((sum, script) => sum + script.views, 0);
+    const totalDownloads = allScripts.reduce((sum, script) => sum + script.downloads, 0);
+    
+    // Update sidebar
+    const totalViewsElement = document.getElementById('totalViews');
+    const totalDownloadsElement = document.getElementById('totalDownloads');
+    
+    if (totalViewsElement) {
+        totalViewsElement.textContent = totalViews.toLocaleString();
+    }
+    if (totalDownloadsElement) {
+        totalDownloadsElement.textContent = totalDownloads.toLocaleString();
+    }
+    
+    // Also save updated data
+    saveScriptsToStorage();
+}
+
+// ========== UTILITIES ==========
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function setupEventListeners() {
+    // Close modal when clicking outside
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    });
+    
+    // Search input enter key
+    const searchInput = document.getElementById('searchInput');
     if (searchInput) {
-        searchInput.value = tag;
-        searchScripts();
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchScripts();
+            }
+        });
     }
-}
-
-// ========== UTILITY FUNCTIONS ==========
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    const globalSearch = document.getElementById('globalSearch');
+    if (globalSearch) {
+        globalSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchAllScripts();
+            }
+        });
+    }
     
-    return date.toLocaleDateString('vi-VN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+    
+    // Auto-refresh hashtag filters when scripts change
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'scriptData') {
+            loadScriptsFromStorage();
+            loadRecentScripts();
+            loadAllScripts();
+            loadHashtagFilters();
+            updateStatistics();
+        }
     });
 }
 
-// ========== INITIALIZATION ==========
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize script manager
-    scriptManager = new ScriptManager();
-    
-    // Load initial data
-    scriptManager.displayScripts(scriptManager.scripts);
-    scriptManager.displayPopularHashtags();
-    
-    // Show home page by default
-    showPage('home');
-    
-    // Setup search input event
-    const searchInput = document.getElementById('searchInput');
-    const searchFilter = document.getElementById('searchFilter');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', searchScripts);
+// Auto-sync with admin panel changes
+setInterval(() => {
+    const savedData = localStorage.getItem('scriptData');
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        if (data.lastUpdate) {
+            // Check if data is newer than what we have
+            const ourData = JSON.parse(localStorage.getItem('scriptData') || '{}');
+            if (new Date(data.lastUpdate) > new Date(ourData.lastUpdate || 0)) {
+                loadScriptsFromStorage();
+                loadRecentScripts();
+                loadAllScripts();
+                loadHashtagFilters();
+                updateStatistics();
+            }
+        }
     }
-    if (searchFilter) {
-        searchFilter.addEventListener('input', searchScripts);
-    }
-});
+}, 5000); // Check every 5 seconds
