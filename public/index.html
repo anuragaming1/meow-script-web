@@ -4,47 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meow Script Web - Free Roblox Scripts</title>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Local CSS -->
     <link rel="stylesheet" href="style.css">
-    <style>
-        .hashtag {
-            display: inline-block;
-            background: rgba(0, 243, 255, 0.2);
-            color: var(--neon-blue);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin: 2px;
-            border: 1px solid rgba(0, 243, 255, 0.3);
-        }
-        
-        .hashtags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin: 10px 0;
-        }
-        
-        .script-meta-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
-        .views-count {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-    </style>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/5968/5968292.png">
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
+        <!-- ========== SIDEBAR ========== -->
         <div class="sidebar">
             <div class="logo">
                 <h1><i class="fas fa-cat"></i> MEOW<span>SCRIPT</span></h1>
@@ -52,23 +23,27 @@
             </div>
             
             <div class="nav-menu">
-                <a href="#home" class="nav-item active" id="navHome">
+                <a href="#home" class="nav-item active" data-page="home">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#info" class="nav-item" id="navInfo">
+                <a href="#scripts" class="nav-item" data-page="scripts">
+                    <i class="fas fa-code"></i>
+                    <span>All Scripts</span>
+                </a>
+                <a href="#info" class="nav-item" data-page="info">
                     <i class="fas fa-info-circle"></i>
                     <span>Info</span>
                 </a>
             </div>
             
             <div class="sidebar-footer">
-                <p><i class="fas fa-code"></i> <span id="totalScripts">0</span> Scripts</p>
+                <p><i class="fas fa-download"></i> <span id="totalDownloads">0</span> Downloads</p>
                 <p><i class="fas fa-eye"></i> <span id="totalViews">0</span> Views</p>
             </div>
         </div>
 
-        <!-- Main Content -->
+        <!-- ========== MAIN CONTENT ========== -->
         <div class="main-content">
             <!-- Header -->
             <header class="main-header">
@@ -81,44 +56,86 @@
                 
                 <div class="header-right">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search scripts or hashtags...">
-                        <button class="search-btn" onclick="searchScripts()"><i class="fas fa-search"></i></button>
+                        <input type="text" id="searchInput" placeholder="Search by name or hashtag..." 
+                               onkeyup="searchScripts()">
+                        <button class="search-btn" onclick="searchScripts()">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <a href="admin.html" class="admin-link" target="_blank">
-                        <i class="fas fa-user-cog"></i> Admin
-                    </a>
+                    <button class="btn-donate" onclick="showDonate()">
+                        <i class="fas fa-heart"></i> Support
+                    </button>
                 </div>
             </header>
 
             <!-- Home Page -->
             <div id="homePage" class="page active">
-                <!-- All Scripts Section -->
+                <!-- Hero Section -->
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h2 class="hero-title">Premium Roblox Scripts</h2>
+                        <p class="hero-subtitle">Free scripts updated daily. Auto-update, auto-farm, GUI hubs, and more!</p>
+                        <div class="hero-buttons">
+                            <button class="hero-btn" onclick="showPage('scripts')">
+                                <i class="fas fa-rocket"></i> Browse All Scripts
+                            </button>
+                            <a href="admin.html" target="_blank" class="hero-btn secondary">
+                                <i class="fas fa-user-cog"></i> Admin Panel
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+
+                <!-- Recently Added Scripts -->
+                <section class="recent-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i> Recently Added
+                    </h2>
+                    <div class="script-grid" id="recentScripts">
+                        <!-- Recent scripts loaded by JavaScript -->
+                        <p class="loading-text">Loading scripts...</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- All Scripts Page -->
+            <div id="scriptsPage" class="page">
                 <section class="all-scripts-section">
-                    <div class="section-header">
+                    <div class="scripts-header">
                         <h2 class="section-title">
                             <i class="fas fa-code"></i> All Scripts
-                            <span class="script-count" id="scriptCount">(0 scripts)</span>
+                            <span class="script-count" id="scriptCount">(0)</span>
                         </h2>
-                        
                         <div class="search-filter">
-                            <input type="text" id="searchFilter" placeholder="Search by name or hashtag..." 
-                                   onkeyup="searchScripts()">
-                            <div class="popular-hashtags" id="popularHashtags">
-                                <!-- Popular hashtags will be loaded here -->
-                            </div>
+                            <input type="text" id="globalSearch" 
+                                   placeholder="Search script name or hashtags..." 
+                                   onkeyup="searchAllScripts()">
                         </div>
                     </div>
                     
-                    <div class="scripts-grid" id="allScripts">
-                        <!-- Scripts will be loaded here -->
-                        <div class="empty-state">
-                            <i class="fas fa-code"></i>
-                            <h3>No scripts found</h3>
-                            <p>Use the admin panel to add your first script!</p>
-                            <a href="admin.html" target="_blank" class="btn-primary">
-                                <i class="fas fa-plus"></i> Add First Script
-                            </a>
+                    <!-- Hashtag Filter -->
+                    <div class="hashtag-filter" id="hashtagFilter">
+                        <div class="hashtag-title">
+                            <i class="fas fa-hashtag"></i> Filter by Hashtag:
                         </div>
+                        <div class="hashtag-list" id="hashtagList">
+                            <!-- Hashtags will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Scripts Grid -->
+                    <div class="scripts-grid" id="allScripts">
+                        <!-- All scripts loaded by JavaScript -->
+                        <p class="loading-text">Loading scripts...</p>
+                    </div>
+                    
+                    <div class="load-more" id="loadMoreBtn" style="display: none;">
+                        <button class="btn-secondary" onclick="loadMoreScripts()">
+                            <i class="fas fa-sync-alt"></i> Load More Scripts
+                        </button>
                     </div>
                 </section>
             </div>
@@ -133,6 +150,7 @@
                     <div class="about-card">
                         <h3><i class="fas fa-users"></i> About Meow Script</h3>
                         <p>Meow Script Web is a free platform providing premium Roblox scripts for the gaming community. All scripts are tested and verified to work.</p>
+                        <p>Scripts are automatically sorted by upload date (newest first). Use hashtags to filter scripts.</p>
                     </div>
                     
                     <div class="contact-grid">
@@ -181,15 +199,23 @@
                         </div>
                     </div>
                     
+                    <div class="warning-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <h4>⚠️ Important Notice</h4>
+                            <p>All scripts are for educational purposes only. Use at your own risk. We are not responsible for any bans or account issues.</p>
+                        </div>
+                    </div>
+                    
                     <div class="instructions-card">
                         <h3><i class="fas fa-graduation-cap"></i> How to Use</h3>
                         <ol>
-                            <li>Choose a script from the list</li>
-                            <li>Click on the script card to view details</li>
+                            <li>Browse scripts on the "All Scripts" page</li>
+                            <li>Use hashtags to filter specific scripts</li>
+                            <li>Click on any script to view details</li>
                             <li>Copy the script code</li>
                             <li>Open Roblox and your executor</li>
                             <li>Paste and execute the script</li>
-                            <li>Enjoy the features!</li>
                         </ol>
                     </div>
                 </section>
@@ -210,22 +236,16 @@
             <div class="modal-body">
                 <div class="script-info">
                     <div class="script-meta">
-                        <div class="hashtags-container" id="modalHashtags"></div>
+                        <div class="script-hashtags" id="modalHashtags"></div>
                         <div class="script-stats">
-                            <span class="views-count">
-                                <i class="fas fa-eye"></i>
-                                <span id="modalViews">0</span> views
-                            </span>
-                            <span class="downloads-count">
-                                <i class="fas fa-download"></i>
-                                <span id="modalDownloads">0</span> downloads
-                            </span>
+                            <span class="views" id="modalViews">0 views</span>
+                            <span class="date" id="modalDate">Just now</span>
                         </div>
                     </div>
                     
                     <div class="script-description">
                         <h4><i class="fas fa-align-left"></i> Description</h4>
-                        <p id="modalDescription"></p>
+                        <p id="modalDescription">No description available.</p>
                     </div>
                     
                     <div class="script-code">
@@ -235,7 +255,7 @@
                                 <i class="far fa-copy"></i> Copy
                             </button>
                         </div>
-                        <pre id="modalCode"></pre>
+                        <pre id="modalCode">// Loading script...</pre>
                     </div>
                     
                     <div class="script-actions">
@@ -251,6 +271,38 @@
         </div>
     </div>
 
+    <!-- Donate Modal -->
+    <div class="modal" id="donateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-heart"></i> Support Us</h2>
+                <button class="close-modal" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <p>If you find our scripts useful, consider supporting us!</p>
+                <div class="donate-options">
+                    <div class="donate-option">
+                        <i class="fab fa-paypal"></i>
+                        <h4>PayPal</h4>
+                        <p>support@meowscript.com</p>
+                    </div>
+                    <div class="donate-option">
+                        <i class="fas fa-qrcode"></i>
+                        <h4>Momo</h4>
+                        <p>0912 345 678</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
