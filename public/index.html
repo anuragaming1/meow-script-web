@@ -4,18 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meow Script Web - Free Roblox Scripts</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
-    <!-- Local CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/5968/5968292.png">
+    <style>
+        .hashtag {
+            display: inline-block;
+            background: rgba(0, 243, 255, 0.2);
+            color: var(--neon-blue);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 2px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+        
+        .hashtags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .script-meta-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .views-count {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <!-- ========== SIDEBAR ========== -->
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="logo">
                 <h1><i class="fas fa-cat"></i> MEOW<span>SCRIPT</span></h1>
@@ -23,27 +52,23 @@
             </div>
             
             <div class="nav-menu">
-                <a href="#home" class="nav-item active" data-page="home">
+                <a href="#home" class="nav-item active" id="navHome">
                     <i class="fas fa-home"></i>
                     <span>Home</span>
                 </a>
-                <a href="#info" class="nav-item" data-page="info">
+                <a href="#info" class="nav-item" id="navInfo">
                     <i class="fas fa-info-circle"></i>
                     <span>Info</span>
-                </a>
-                <a href="admin.html" class="nav-item" target="_blank">
-                    <i class="fas fa-user-cog"></i>
-                    <span>Admin Login</span>
                 </a>
             </div>
             
             <div class="sidebar-footer">
-                <p><i class="fas fa-download"></i> 5000+ Downloads</p>
-                <p><i class="fas fa-users"></i> 1000+ Users</p>
+                <p><i class="fas fa-code"></i> <span id="totalScripts">0</span> Scripts</p>
+                <p><i class="fas fa-eye"></i> <span id="totalViews">0</span> Views</p>
             </div>
         </div>
 
-        <!-- ========== MAIN CONTENT ========== -->
+        <!-- Main Content -->
         <div class="main-content">
             <!-- Header -->
             <header class="main-header">
@@ -56,92 +81,44 @@
                 
                 <div class="header-right">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search scripts...">
+                        <input type="text" id="searchInput" placeholder="Search scripts or hashtags...">
                         <button class="search-btn" onclick="searchScripts()"><i class="fas fa-search"></i></button>
                     </div>
-                    <button class="btn-donate" onclick="showDonate()">
-                        <i class="fas fa-heart"></i> Donate
-                    </button>
+                    <a href="admin.html" class="admin-link" target="_blank">
+                        <i class="fas fa-user-cog"></i> Admin
+                    </a>
                 </div>
             </header>
 
             <!-- Home Page -->
             <div id="homePage" class="page active">
-                <!-- Hero Section -->
-                <div class="hero-section">
-                    <div class="hero-content">
-                        <h2 class="hero-title">Premium Roblox Scripts</h2>
-                        <p class="hero-subtitle">Free scripts for Blox Fruits, Arsenal, Murder Mystery 2, and more!</p>
-                        <div class="hero-buttons">
-                            <button class="hero-btn" onclick="scrollToScripts()">
-                                <i class="fas fa-rocket"></i> Explore Scripts
-                            </button>
-                            <button class="hero-btn secondary" onclick="showPage('info')">
-                                <i class="fas fa-info-circle"></i> Learn More
-                            </button>
+                <!-- All Scripts Section -->
+                <section class="all-scripts-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-code"></i> All Scripts
+                            <span class="script-count" id="scriptCount">(0 scripts)</span>
+                        </h2>
+                        
+                        <div class="search-filter">
+                            <input type="text" id="searchFilter" placeholder="Search by name or hashtag..." 
+                                   onkeyup="searchScripts()">
+                            <div class="popular-hashtags" id="popularHashtags">
+                                <!-- Popular hashtags will be loaded here -->
+                            </div>
                         </div>
                     </div>
-                    <div class="hero-image">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                </div>
-
-                <!-- Featured Scripts -->
-                <section class="featured-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-fire"></i> Hot Scripts Today
-                    </h2>
-                    <div class="script-grid" id="featuredScripts">
-                        <!-- Scripts loaded by JavaScript -->
-                    </div>
-                </section>
-
-                <!-- Categories -->
-                <section class="categories-section">
-                    <h2 class="section-title">
-                        <i class="fas fa-tags"></i> Categories
-                    </h2>
-                    <div class="categories-grid">
-                        <div class="category-card" onclick="filterScripts('Blox Fruits')">
-                            <i class="fas fa-gem"></i>
-                            <h3>Blox Fruits</h3>
-                            <p>Auto farm, auto raid, scripts</p>
-                        </div>
-                        <div class="category-card" onclick="filterScripts('GUI')">
-                            <i class="fas fa-palette"></i>
-                            <h3>GUI Scripts</h3>
-                            <p>Beautiful UI interfaces</p>
-                        </div>
-                        <div class="category-card" onclick="filterScripts('Utility')">
-                            <i class="fas fa-tools"></i>
-                            <h3>Utilities</h3>
-                            <p>TP, fly, noclip, etc.</p>
-                        </div>
-                        <div class="category-card" onclick="filterScripts('Auto Farm')">
-                            <i class="fas fa-robot"></i>
-                            <h3>Auto Farm</h3>
-                            <p>Automatic farming</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- All Scripts -->
-                <section class="all-scripts-section" id="allScriptsSection">
-                    <h2 class="section-title">
-                        <i class="fas fa-code"></i> All Scripts
-                    </h2>
-                    <div class="filter-controls">
-                        <input type="text" id="searchFilter" placeholder="Search scripts..." onkeyup="searchScripts()">
-                        <select id="categoryFilter" onchange="filterScripts(this.value)">
-                            <option value="">All Categories</option>
-                            <option value="Blox Fruits">Blox Fruits</option>
-                            <option value="GUI">GUI</option>
-                            <option value="Utility">Utility</option>
-                            <option value="Auto Farm">Auto Farm</option>
-                        </select>
-                    </div>
+                    
                     <div class="scripts-grid" id="allScripts">
-                        <!-- All scripts loaded by JavaScript -->
+                        <!-- Scripts will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-code"></i>
+                            <h3>No scripts found</h3>
+                            <p>Use the admin panel to add your first script!</p>
+                            <a href="admin.html" target="_blank" class="btn-primary">
+                                <i class="fas fa-plus"></i> Add First Script
+                            </a>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -204,14 +181,6 @@
                         </div>
                     </div>
                     
-                    <div class="warning-card">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <div>
-                            <h4>⚠️ Important Notice</h4>
-                            <p>All scripts are for educational purposes only. Use at your own risk. We are not responsible for any bans or account issues.</p>
-                        </div>
-                    </div>
-                    
                     <div class="instructions-card">
                         <h3><i class="fas fa-graduation-cap"></i> How to Use</h3>
                         <ol>
@@ -241,8 +210,17 @@
             <div class="modal-body">
                 <div class="script-info">
                     <div class="script-meta">
-                        <span class="category" id="modalCategory"></span>
-                        <span class="views" id="modalViews"></span>
+                        <div class="hashtags-container" id="modalHashtags"></div>
+                        <div class="script-stats">
+                            <span class="views-count">
+                                <i class="fas fa-eye"></i>
+                                <span id="modalViews">0</span> views
+                            </span>
+                            <span class="downloads-count">
+                                <i class="fas fa-download"></i>
+                                <span id="modalDownloads">0</span> downloads
+                            </span>
+                        </div>
                     </div>
                     
                     <div class="script-description">
@@ -273,38 +251,6 @@
         </div>
     </div>
 
-    <!-- Donate Modal -->
-    <div class="modal" id="donateModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-heart"></i> Support Us</h2>
-                <button class="close-modal" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="modal-body">
-                <p>If you find our scripts useful, consider supporting us!</p>
-                <div class="donate-options">
-                    <div class="donate-option">
-                        <i class="fab fa-paypal"></i>
-                        <h4>PayPal</h4>
-                        <p>support@meowscript.com</p>
-                    </div>
-                    <div class="donate-option">
-                        <i class="fas fa-qrcode"></i>
-                        <h4>Momo</h4>
-                        <p>0912 345 678</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
-
-    <!-- JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
