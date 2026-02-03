@@ -1,37 +1,11 @@
 {
   "name": "meow-script-web",
-  "version": "1.0.0",
-  "description": "Meow Script Web - Share Roblox Scripts",
-  "private": true,
+  "version": "3.0.0",
+  "description": "Free Roblox Scripts Website with Admin Panel",
   "scripts": {
-    "dev": "npx serve .",
-    "build": "echo 'No build step required for static site'",
-    "start": "npx serve .",
-    "predeploy": "echo 'Preparing for deployment...'",
-    "deploy": "echo 'Deploy to Vercel'"
+    "dev": "echo 'Open index.html directly in browser'",
+    "build": "echo 'Static site - no build required'"
   },
-  "dependencies": {
-    "toastify-js": "^1.12.0"
-  },
-  "devDependencies": {
-    "serve": "^14.0.0"
-  },
-  "keywords": [
-    "roblox",
-    "script",
-    "neon",
-    "web",
-    "meow"
-  ],
-  "author": "Anura Gaming",
-  "license": "MIT",
-  "homepage": "https://meow-script.vercel.app",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/meow-script-web"
-  },
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
