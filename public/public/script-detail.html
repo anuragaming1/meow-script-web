@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Script Details - Meow Script Web</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .detail-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 243, 255, 0.3);
+        }
+        
+        .script-header {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px solid var(--neon-blue);
+        }
+        
+        .script-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+        }
+        
+        .script-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .script-meta span {
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .script-category {
+            background-color: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+        }
+        
+        .script-date {
+            background-color: rgba(0, 243, 255, 0.1);
+            color: var(--neon-blue);
+        }
+        
+        .script-downloads {
+            background-color: rgba(255, 0, 255, 0.1);
+            color: var(--neon-pink);
+        }
+        
+        .script-description {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(0, 243, 255, 0.2);
+        }
+        
+        .script-description h3 {
+            color: var(--neon-blue);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .script-code-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(0, 243, 255, 0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .code-header h3 {
+            color: var(--neon-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .code-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-action {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-copy {
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-green));
+            color: var(--dark-bg);
+        }
+        
+        .btn-download {
+            background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
+            color: white;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-3px);
+        }
+        
+        #scriptCode {
+            background-color: #0a0a20;
+            border-radius: 15px;
+            padding: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-light);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            min-height: 200px;
+        }
+        
+        .instructions {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(0, 243, 255, 0.2);
+        }
+        
+        .instructions h3 {
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+        }
+        
+        .instructions li strong {
+            color: var(--neon-green);
+        }
+        
+        @media (max-width: 768px) {
+            .detail-container {
+                padding: 20px;
+            }
+            
+            .script-header {
+                padding: 25px;
+            }
+            
+            .script-title {
+                font-size: 28px;
+            }
+            
+            .code-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        
+        <div class="script-header">
+            <h1 class="script-title" id="scriptTitle">Script Title</h1>
+            <div class="script-meta">
+                <span class="script-category" id="scriptCategory">Category</span>
+                <span class="script-date" id="scriptDate">Date</span>
+                <span class="script-downloads" id="scriptDownloads">Downloads</span>
+            </div>
+            <p id="scriptDescription">Script description will appear here...</p>
+        </div>
+        
+        <div class="script-code-container">
+            <div class="code-header">
+                <h3><i class="fas fa-code"></i> Script Code</h3>
+                <div class="code-actions">
+                    <button class="btn-action btn-copy" onclick="copyScript()">
+                        <i class="far fa-copy"></i> Copy
+                    </button>
+                    <button class="btn-action btn-download" onclick="downloadScript()">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+            <pre id="scriptCode">// Script code will appear here
+// Loading...</pre>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-graduation-cap"></i> How to Use This Script</h3>
+            <ol>
+                <li><strong>Copy the script</strong> above by clicking the "Copy" button</li>
+                <li><strong>Open Roblox</strong> and launch your game</li>
+                <li><strong>Open your executor</strong> (Synapse X, Krnl, Fluxus, etc.)</li>
+                <li><strong>Paste the script</strong> into the executor window</li>
+                <li><strong>Execute/Inject</strong> the script</li>
+                <li><strong>Enjoy the features!</strong> Look for the GUI that appears</li>
+            </ol>
+            
+            <div style="margin-top: 25px; padding: 20px; background-color: rgba(255, 68, 68, 0.1); border-radius: 12px; border-left: 4px solid #ff4444;">
+                <h4 style="color: #ff8888; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-exclamation-triangle"></i> Important Notice
+                </h4>
+                <p style="color: #ffaaaa;">Use scripts at your own risk. We are not responsible for any bans or account issues. Scripts are for educational purposes only.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const script = JSON.parse(localStorage.getItem('currentScript') || '{}');
+            
+            if (script.name) {
+                document.getElementById('scriptTitle').textContent = script.name;
+                document.getElementById('scriptCategory').textContent = script.category || 'Script';
+                document.getElementById('scriptDate').textContent = 'Today';
+                document.getElementById('scriptDownloads').textContent = '1000+ Downloads';
+                document.getElementById('scriptDescription').textContent = script.description || 'No description available';
+                document.getElementById('scriptCode').textContent = script.code || '// No code available';
+            } else {
+                document.getElementById('scriptTitle').textContent = 'Script Not Found';
+                document.getElementById('scriptDescription').textContent = 'Please select a script from the home page.';
+                document.getElementById('scriptCode').textContent = '// Script not found. Please go back and select a script.';
+            }
+        });
+        
+        function copyScript() {
+            const code = document.getElementById('scriptCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Script copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy script. Please try again.');
+            });
+        }
+        
+        function downloadScript() {
+            const code = document.getElementById('scriptCode').textContent;
+            const title = document.getElementById('scriptTitle').textContent;
+            
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.lua';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
